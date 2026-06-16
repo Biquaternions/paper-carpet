@@ -1,6 +1,9 @@
 package me.biquaternions.carpet;
 
 import lombok.Getter;
+import me.biquaternions.carpet.configurations.CarpetConfiguration;
+import me.biquaternions.carpet.configurations.MessageConfiguration;
+import me.biquaternions.carpet.listener.HopperListener;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -14,11 +17,13 @@ public final class PaperCarpet extends JavaPlugin {
     @Override
     public void onLoad() {
         this.configHandler = new AdventureConfigHandler(this.getLogger(), MiniMessage.miniMessage().deserialize("[Carpet]"));
+        new CarpetConfiguration(this).load();
+        new MessageConfiguration(this).load();
     }
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        this.getServer().getPluginManager().registerEvents(new HopperListener(), this);
     }
 
     @Override

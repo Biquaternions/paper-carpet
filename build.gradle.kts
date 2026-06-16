@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "9.4.1"
     id("io.freefair.lombok") version "9.4.0"
     id("xyz.jpenilla.run-paper") version "3.0.2"
-    // id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 repositories {
@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-    // paperweight.paperDevBundle("26.2-rc-2.build.+")
-    compileOnly("io.papermc.paper:paper-api:26.2-rc-2.build.+")
+    paperweight.paperDevBundle("26.2.build.+")
+    // compileOnly("io.papermc.paper:paper-api:26.2-rc-2.build.+")
 
     implementation("net.serlith.ConfigAPI:ConfigAPI-core:1.2.11")
     implementation("net.serlith.ConfigAPI:ConfigAPI-adventure:1.2.11")
@@ -29,7 +29,7 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("26.1.2")
+        minecraftVersion("26.2")
         jvmArgs("-Xms2G", "-Xmx2G")
     }
 
