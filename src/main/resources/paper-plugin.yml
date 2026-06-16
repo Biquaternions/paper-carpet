@@ -1,0 +1,12 @@
+name: Carpet
+description: $description
+version: $version
+
+main: me.biquaternions.carpet.PaperCarpet
+bootstrapper: me.biquaternions.carpet.PaperCarpetBootstrap
+api-version: '26.2'
+load: STARTUP
+
+authors:
+  - gnembon
+  - Biquaternions
