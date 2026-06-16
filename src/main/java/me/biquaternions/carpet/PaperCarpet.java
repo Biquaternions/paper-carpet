@@ -25,4 +25,5 @@ public final class PaperCarpet extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
+
 }
