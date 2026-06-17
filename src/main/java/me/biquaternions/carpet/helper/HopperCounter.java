@@ -123,9 +123,10 @@ public class HopperCounter {
                 continue;
             }
 
+            final List<Component> worldText = new ArrayList<>();
             String worldKey = world.getKey().asString();
-            int chars = Math.min(DEFAULT_WIDTH - 5 - worldKey.length(), 0);
-            text.add(Component.text("|--[", NamedTextColor.BLUE)
+            int chars = Math.max(DEFAULT_WIDTH - 5 - worldKey.length(), 0);
+            worldText.add(Component.text("|--[", NamedTextColor.BLUE)
                     .append(Component.text(worldKey, NamedTextColor.WHITE))
                     .append(Component.text("]", NamedTextColor.BLUE))
                     .append(Component.text("-".repeat(chars), NamedTextColor.BLUE))
@@ -133,12 +134,16 @@ public class HopperCounter {
             for (HopperCounter counter : entry.getValue().values()) {
                 List<Component> temp = counter.format(world, realtime, false);
                 if (temp.size() > 1) {
-                    if (!text.isEmpty()) {
-                        text.add(Component.empty());
+                    if (!worldText.isEmpty()) {
+                        worldText.add(Component.empty());
                     }
-                    text.addAll(temp);
+                    worldText.addAll(temp);
                 }
             }
+            if (worldText.size() == 1) {
+                worldText.add(Component.text("No items have been counted for this world yet."));
+            }
+            text.addAll(worldText);
         }
 
         if (text.isEmpty()) {
