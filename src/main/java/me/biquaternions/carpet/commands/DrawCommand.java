@@ -23,10 +23,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 @UtilityClass
 @SuppressWarnings("UnstableApiUsage")
 public class DrawCommand {
@@ -134,7 +137,7 @@ public class DrawCommand {
 
     private int setBlock(
             World world, Location mbpos, int x, int y, int z,
-            BlockState block, BlockInWorldPredicate replacement,
+            BlockState block, @Nullable BlockInWorldPredicate replacement,
             List<Location> list
     )
     {
