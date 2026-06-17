@@ -38,9 +38,15 @@ public class DistanceCalculator {
                 .color(NamedTextColor.RED)
                 .build();
         List<Component> res = new ArrayList<>();
-        res.add(Component.text("Distance between "));
-        res.add(ComponentTool.formatPositionTeleportable(pos1, style).appendSpace().append(Component.text("and")).appendSpace());
-        res.add(ComponentTool.formatPositionTeleportable(pos2, style).append(Component.text(":")));
+        res.add(Component.text("Distance between ")
+                .appendSpace()
+                .append(ComponentTool.formatPositionTeleportable(pos1, style))
+                .appendSpace()
+                .append(Component.text("and", NamedTextColor.WHITE))
+                .appendSpace()
+                .append(ComponentTool.formatPositionTeleportable(pos2, style))
+                .append(Component.text(":", NamedTextColor.WHITE))
+        );
         res.add(Component.text(" - Spherical: ").append(Component.text(String.format("%.2f", spherical), NamedTextColor.WHITE, TextDecoration.BOLD)));
         res.add(Component.text(" - Cylindrical: ").append(Component.text(String.format("%.2f", cylindrical), NamedTextColor.WHITE, TextDecoration.BOLD)));
         res.add(Component.text(" - Manhattan: ").append(Component.text(String.format("%.1f", manhattan), NamedTextColor.WHITE, TextDecoration.BOLD)));
