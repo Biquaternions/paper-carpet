@@ -2,6 +2,7 @@ package me.biquaternions.carpet.helper;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 @NullMarked
 public class HopperCounter {
 
+    private static final int DEFAULT_WIDTH = 54;
     private static final ConcurrentMap<UUID, Map<DyeColor, HopperCounter>> COUNTERS = new ConcurrentHashMap<>();
 
     public static void registerWorld(final World world) {
@@ -61,7 +63,7 @@ public class HopperCounter {
         this.startTick = -1L;
         this.color = color;
         TextColor textColor = TextColor.color(this.color.getColor().asRGB());
-        this.coloredName = Component.text(textColor.asHexString()).appendSpace().append(Component.text(this.color.name()));
+        this.coloredName = Component.text(this.color.name().toLowerCase(Locale.ROOT), textColor);
     }
 
     /**
@@ -119,6 +121,13 @@ public class HopperCounter {
                 continue;
             }
 
+            String worldKey = world.getKey().asString();
+            int chars = Math.min(DEFAULT_WIDTH - 5 - worldKey.length(), 0);
+            text.add(Component.text("|--[", NamedTextColor.BLUE)
+                    .append(Component.text(worldKey, NamedTextColor.WHITE))
+                    .append(Component.text("]", NamedTextColor.BLUE))
+                    .append(Component.text("-".repeat(chars), NamedTextColor.BLUE))
+            );
             for (HopperCounter counter : entry.getValue().values()) {
                 List<Component> temp = counter.format(world, realtime, false);
                 if (temp.size() > 1) {
