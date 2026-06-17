@@ -2,6 +2,8 @@ package me.biquaternions.carpet.helper;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
@@ -154,59 +156,77 @@ public class HopperCounter {
         if (this.startTick < 0 || ticks == 0) {
             if (brief) {
                 return Collections.singletonList(
-                        Component.text("b").append(this.coloredName)
-                                .append(Component.text("w : "))
-                                .append(Component.text("gi -, -/h, - min "))
+                        this.coloredName.decorate(TextDecoration.BOLD)
+                                .append(Component.text(":", NamedTextColor.WHITE))
+                                .appendSpace()
+                                .append(Component.text("-, -/h, - min ", NamedTextColor.GRAY, TextDecoration.ITALIC))
                 );
             }
-            return Collections.singletonList(this.coloredName.append(Component.text("w  hasn't started counting yet")));
+            return Collections.singletonList(this.coloredName.appendSpace().append(Component.text("hasn't started counting yet", NamedTextColor.WHITE)));
         }
         long total = this.getTotalItems();
         if (total == 0) {
             if (brief) {
-                return Collections.singletonList(Component.text("b").append(this.coloredName)
-                        .append(Component.text("w : "))
-                        .append(Component.text("wb 0"))
-                        .append(Component.text("w , "))
-                        .append(Component.text("wb 0"))
-                        .append(Component.text("w /h, "))
-                        .append(Component.text(String.format("wb %.1f ", ticks / (20.0 * 60.0))))
-                        .append(Component.text("w min"))
+                return Collections.singletonList(this.coloredName.decorate(TextDecoration.BOLD)
+                        .append(Component.text(":", NamedTextColor.WHITE))
+                        .appendSpace()
+                        .append(Component.text("0", NamedTextColor.WHITE, TextDecoration.BOLD))
+                        .append(Component.text(",", NamedTextColor.WHITE))
+                        .appendSpace()
+                        .append(Component.text("0", NamedTextColor.WHITE, TextDecoration.BOLD))
+                        .append(Component.text("/h,", NamedTextColor.WHITE))
+                        .appendSpace()
+                        .append(Component.text(String.format("%.1f", ticks / (20.0 * 60.0)), NamedTextColor.WHITE, TextDecoration.BOLD))
+                        .appendSpace()
+                        .append(Component.text("min", NamedTextColor.WHITE))
                 );
             }
-            return Collections.singletonList(Component.text("w No items for ")
+            return Collections.singletonList(Component.text("No items for", NamedTextColor.WHITE)
+                    .appendSpace()
                     .append(this.coloredName)
-                    .append(Component.text(String.format("w  yet (%.2f min.%s)", ticks / (20.0 * 60.0), (realTime ? " - real time" : ""))))
-                    .append(Component.text("nb  [X]"))
-                    .append(Component.text("^g reset"))
-                    .append(Component.text("!/counter " + this.color.name() + " reset"))
+                    .appendSpace()
+                    .append(Component.text(String.format("yet (%.2f min.%s)", ticks / (20.0 * 60.0), (realTime ? " - real time" : "")), NamedTextColor.WHITE))
+                    .appendSpace()
+                    .append(Component.text("[X]", NamedTextColor.DARK_RED)
+                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Reset this counter", NamedTextColor.RED)))
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("counter " + this.color.name().toLowerCase(Locale.ROOT) + " reset")))
+                    )
             );
         }
 
         if (brief) {
-            return Collections.singletonList(Component.text("b").append(this.coloredName)
-                    .append(Component.text("w : "))
-                    .append(Component.text("wb " + total))
-                    .append(Component.text("w , "))
-                    .append(Component.text("wb " + (total * (20 * 60 * 60) / ticks)))
-                    .append(Component.text("w /h, "))
-                    .append(Component.text(String.format("wb %.1f ", ticks / (20.0 * 60.0))))
-                    .append(Component.text("w min"))
+            return Collections.singletonList(this.coloredName.decorate(TextDecoration.BOLD)
+                    .append(Component.text("w:", NamedTextColor.WHITE))
+                    .appendSpace()
+                    .append(Component.text(String.valueOf(total), NamedTextColor.WHITE, TextDecoration.BOLD))
+                    .append(Component.text(",", NamedTextColor.WHITE))
+                    .appendSpace()
+                    .append(Component.text(String.valueOf((total * (20 * 60 * 60) / ticks)), NamedTextColor.WHITE, TextDecoration.BOLD))
+                    .append(Component.text("/h,", NamedTextColor.WHITE))
+                    .appendSpace()
+                    .append(Component.text(String.format("%.1f ", ticks / (20.0 * 60.0)), NamedTextColor.WHITE, TextDecoration.BOLD))
+                    .append(Component.text("min", NamedTextColor.WHITE))
             );
         }
         List<Component> items = new ArrayList<>();
-        items.add(Component.text("w Items for ").append(this.coloredName)
-                .append(Component.text("w  ("))
-                .append(Component.text(String.format("wb %.2f", ticks * 1.0 / (20 * 60))))
-                .append(Component.text("w  min" + (realTime ? " - real time" : "") + "), "))
-                .append(Component.text("w total: "))
-                .append(Component.text("wb " + total))
-                .append(Component.text("w , ("))
-                .append(Component.text(String.format("wb %.1f", total * 1.0 * (20 * 60 * 60) / ticks)))
-                .append(Component.text("w /h):"))
-                .append(Component.text("nb [X]"))
-                .append(Component.text("^g reset"))
-                .append(Component.text("!/counter " + this.color + " reset"))
+        items.add(Component.text("Items for ", NamedTextColor.WHITE).append(this.coloredName)
+                .appendSpace()
+                .append(Component.text("(", NamedTextColor.WHITE))
+                .append(Component.text(String.format("%.2f", ticks * 1.0 / (20 * 60)), NamedTextColor.WHITE, TextDecoration.BOLD))
+                .appendSpace()
+                .append(Component.text("min" + (realTime ? " - real time" : "") + "), ", NamedTextColor.WHITE))
+                .appendSpace()
+                .append(Component.text("total:", NamedTextColor.WHITE))
+                .appendSpace()
+                .append(Component.text(String.valueOf(total), NamedTextColor.WHITE, TextDecoration.BOLD))
+                .append(Component.text(", (", NamedTextColor.WHITE))
+                .append(Component.text(String.format("%.1f", total * 1.0 * (20 * 60 * 60) / ticks), NamedTextColor.WHITE, TextDecoration.BOLD))
+                .append(Component.text("/h):", NamedTextColor.WHITE))
+                .appendSpace()
+                .append(Component.text("[X]", NamedTextColor.DARK_RED)
+                        .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Reset this counter", NamedTextColor.RED)))
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("counter " + this.color.name().toLowerCase(Locale.ROOT) + " reset")))
+                )
         );
         items.addAll(counter.entrySet().stream().sorted((e, f) -> Long.compare(f.getValue(), e.getValue())).map(e -> {
             Material material = e.getKey();
@@ -215,12 +235,15 @@ public class HopperCounter {
             TextColor color = guessColor(material);
             itemName = itemName.style((color != null) ? itemStyle.color(color) : itemStyle.decorate(TextDecoration.ITALIC));
             long count = e.getValue();
-            return Component.text("g - ").append(itemName)
-                    .append(Component.text("g : "))
-                    .append(Component.text("wb " + count))
-                    .append(Component.text("g , "))
-                    .append(Component.text(String.format("wb %.1f", count * (20.0 * 60.0 * 60.0) / ticks)))
-                    .append(Component.text("w /h"));
+            return Component.text("-", NamedTextColor.GRAY).appendSpace().append(itemName)
+                    .appendSpace()
+                    .append(Component.text(":", NamedTextColor.GRAY))
+                    .appendSpace()
+                    .append(Component.text(String.valueOf(count), NamedTextColor.WHITE, TextDecoration.BOLD))
+                    .append(Component.text(",", NamedTextColor.WHITE))
+                    .appendSpace()
+                    .append(Component.text(String.format("%.1f", count * (20.0 * 60.0 * 60.0) / ticks), NamedTextColor.WHITE, TextDecoration.BOLD))
+                    .append(Component.text("/h", NamedTextColor.WHITE));
         }).toList());
         return items;
     }
