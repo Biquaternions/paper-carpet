@@ -8,7 +8,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import lombok.experimental.UtilityClass;
 import me.biquaternions.carpet.helper.HopperCounter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
