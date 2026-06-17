@@ -52,7 +52,9 @@ public class HopperListener implements Listener {
         }
 
         Item itemEntity = event.getItem();
-        if (this.handleHopperPull(itemEntity.getItemStack(), hopper, level)) {
+        ItemStack item = itemEntity.getItemStack();
+        if (this.handleHopperPull(item, hopper, level)) {
+            item.setAmount(0);
             itemEntity.remove();
         }
     }
