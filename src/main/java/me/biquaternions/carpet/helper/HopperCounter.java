@@ -112,6 +112,15 @@ public class HopperCounter {
         }
     }
 
+    public static Component formatWorldHeader(final World world) {
+        String worldKey = world.getKey().asString();
+        int chars = Math.max(DEFAULT_WIDTH - 5 - worldKey.length(), 0);
+        return Component.text("|--[", NamedTextColor.BLUE)
+                .append(Component.text(worldKey, NamedTextColor.GRAY))
+                .append(Component.text("]", NamedTextColor.BLUE))
+                .append(Component.text("-".repeat(chars), NamedTextColor.BLUE));
+    }
+
     /**
      * Prints all the counters to chat, nicely formatted, and you can choose whether to display in game time or IRL time
      */
@@ -124,13 +133,7 @@ public class HopperCounter {
             }
 
             final List<Component> worldText = new ArrayList<>();
-            String worldKey = world.getKey().asString();
-            int chars = Math.max(DEFAULT_WIDTH - 5 - worldKey.length(), 0);
-            worldText.add(Component.text("|--[", NamedTextColor.BLUE)
-                    .append(Component.text(worldKey, NamedTextColor.WHITE))
-                    .append(Component.text("]", NamedTextColor.BLUE))
-                    .append(Component.text("-".repeat(chars), NamedTextColor.BLUE))
-            );
+            worldText.add(HopperCounter.formatWorldHeader(world));
             for (HopperCounter counter : entry.getValue().values()) {
                 List<Component> temp = counter.format(world, realtime, false);
                 if (temp.size() > 1) {
@@ -201,7 +204,7 @@ public class HopperCounter {
 
         if (brief) {
             return Collections.singletonList(this.coloredName.decorate(TextDecoration.BOLD)
-                    .append(Component.text("w:", NamedTextColor.WHITE))
+                    .append(Component.text(":", NamedTextColor.WHITE))
                     .appendSpace()
                     .append(Component.text(String.valueOf(total), NamedTextColor.WHITE, TextDecoration.BOLD))
                     .append(Component.text(",", NamedTextColor.WHITE))
@@ -241,7 +244,6 @@ public class HopperCounter {
             itemName = itemName.style((color != null) ? itemStyle.color(color) : itemStyle.decorate(TextDecoration.ITALIC));
             long count = e.getValue();
             return Component.text("-", NamedTextColor.GRAY).appendSpace().append(itemName)
-                    .appendSpace()
                     .append(Component.text(":", NamedTextColor.GRAY))
                     .appendSpace()
                     .append(Component.text(String.valueOf(count), NamedTextColor.WHITE, TextDecoration.BOLD))

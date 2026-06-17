@@ -8,6 +8,8 @@ import io.papermc.paper.command.brigadier.Commands;
 import lombok.experimental.UtilityClass;
 import me.biquaternions.carpet.helper.HopperCounter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
@@ -67,6 +69,7 @@ public class CounterCommand {
             return Command.SINGLE_SUCCESS;
         }
 
+        source.getSender().sendMessage(HopperCounter.formatWorldHeader(world));
         for (Component message : counter.format(world, realtime, false)) {
             source.getSender().sendMessage(message);
         }
@@ -75,7 +78,7 @@ public class CounterCommand {
 
     private int resetCounters(CommandSourceStack source) {
         HopperCounter.resetAll(false);
-        source.getSender().sendMessage("w Restarted all counters");
+        source.getSender().sendMessage("Restarted all counters");
         return Command.SINGLE_SUCCESS;
     }
 
@@ -104,7 +107,12 @@ public class CounterCommand {
         }
 
         counter.reset(world);
-        source.getSender().sendMessage("w Restarted " + color + " counter");
+        source.getSender().sendMessage(Component.text("Restarted")
+                .appendSpace()
+                .append(Component.text(color.name().toLowerCase(Locale.ROOT), TextColor.color(color.getColor().asRGB())))
+                .appendSpace()
+                .append(Component.text("counter"))
+        );
         return Command.SINGLE_SUCCESS;
     }
 
