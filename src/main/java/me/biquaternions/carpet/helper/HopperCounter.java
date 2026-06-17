@@ -203,7 +203,7 @@ public class HopperCounter {
             Material material = e.getKey();
             TranslatableComponent itemName = Component.translatable(material.translationKey());
             Style itemStyle = itemName.style();
-            TextColor color = guessColor(material, world);
+            TextColor color = guessColor(material);
             itemName = itemName.style((color != null) ? itemStyle.color(color) : itemStyle.decorate(TextDecoration.ITALIC));
             long count = e.getValue();
             return Component.text("g - ").append(itemName)
@@ -359,13 +359,12 @@ public class HopperCounter {
      * Guesses the item's color from the item itself. It first calls {@link HopperCounter#fromMaterial} to see if it has a
      * valid color there, if not just makes a guess, and if that fails just returns null
      */
-    public static @Nullable TextColor guessColor(Material material, World level) {
+    public static @Nullable TextColor guessColor(Material material) {
         TextColor direct = HopperCounter.fromMaterial(material);
         if (direct != null) {
             return direct;
         }
 
-        NamespacedKey id = material.getKey();
         for (Recipe recipe : Bukkit.getRecipesFor(new ItemStack(material))) {
             switch (recipe) {
                 case ShapelessRecipe r -> {

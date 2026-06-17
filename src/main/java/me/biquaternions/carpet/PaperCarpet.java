@@ -4,9 +4,11 @@ import lombok.Getter;
 import me.biquaternions.carpet.configurations.CarpetConfiguration;
 import me.biquaternions.carpet.configurations.MessageConfiguration;
 import me.biquaternions.carpet.listener.HopperListener;
+import me.biquaternions.carpet.listener.WorldListener;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PaperCarpet extends JavaPlugin {
@@ -23,7 +25,9 @@ public final class PaperCarpet extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(new HopperListener(), this);
+        PluginManager manager = this.getServer().getPluginManager();
+        manager.registerEvents(new HopperListener(), this);
+        manager.registerEvents(new WorldListener(), this);
     }
 
     @Override

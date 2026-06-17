@@ -24,7 +24,7 @@ import org.jspecify.annotations.NullMarked;
 public class HopperListener implements Listener {
 
     @EventHandler
-    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
+    public void onInventoryMoveItem(final InventoryMoveItemEvent event) {
         // Hopper pulling
         if (!(event.getDestination() instanceof CraftInventory inventory && inventory.getInventory() instanceof HopperBlockEntity hopper)) {
             return;
@@ -41,7 +41,7 @@ public class HopperListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryPickupItem(InventoryPickupItemEvent event) {
+    public void onInventoryPickupItem(final InventoryPickupItemEvent event) {
         // Hopper pulling
         if (!(event.getInventory() instanceof CraftInventory inventory && inventory.getInventory() instanceof HopperBlockEntity hopper)) {
             return;
