@@ -30,12 +30,10 @@ public class CounterCommand {
             builder.then(Commands.literal(color.name().toLowerCase(Locale.ROOT))
                     .executes(c -> CounterCommand.displayCounter(c.getSource(), color, false))
                     .then(Commands.literal("reset")
-                            .then(Commands.literal("reset")
-                                    .executes(c -> CounterCommand.resetCounter(c.getSource(), color))
-                            )
-                            .then(Commands.literal("realtime")
-                                    .executes(c ->CounterCommand.displayCounter(c.getSource(), color, true))
-                            )
+                            .executes(c -> CounterCommand.resetCounter(c.getSource(), color))
+                    )
+                    .then(Commands.literal("realtime")
+                            .executes(c ->CounterCommand.displayCounter(c.getSource(), color, true))
                     )
             );
         }
