@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 
+import java.util.Locale;
+
 @UtilityClass
 @SuppressWarnings({"SameReturnValue", "UnusedReturnValue", "SameParameterValue"})
 public class CounterCommand {
@@ -25,7 +27,7 @@ public class CounterCommand {
                 );
 
         for (DyeColor color : DyeColor.values()) {
-            builder.then(Commands.literal(color.name())
+            builder.then(Commands.literal(color.name().toLowerCase(Locale.ROOT))
                     .executes(c -> CounterCommand.displayCounter(c.getSource(), color, false))
                     .then(Commands.literal("reset")
                             .then(Commands.literal("reset")

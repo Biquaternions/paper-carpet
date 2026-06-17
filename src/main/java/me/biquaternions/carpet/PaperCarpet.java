@@ -18,7 +18,9 @@ public final class PaperCarpet extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        this.configHandler = new AdventureConfigHandler(this.getLogger(), MiniMessage.miniMessage().deserialize("[Carpet]"));
+        this.configHandler = new AdventureConfigHandler(this.getLogger(), MiniMessage.miniMessage().deserialize(
+                "<color:#C7C7C7>[<gradient:#2EFFCE:#B8FEFF:#2EFFCE>Carpet</gradient>]</color>"
+        ));
         new CarpetConfiguration(this).load();
         new MessageConfiguration(this).load();
     }
