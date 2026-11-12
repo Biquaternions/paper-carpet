@@ -1,5 +1,6 @@
 package me.biquaternions.carpet.listener;
 
+import me.biquaternions.carpet.CarpetSettings;
 import me.biquaternions.carpet.helper.HopperCounter;
 import me.biquaternions.carpet.utils.WoolTool;
 import net.minecraft.core.BlockPos;
@@ -60,6 +61,9 @@ public class HopperListener implements Listener {
     }
 
     private boolean handleHopperPull(final ItemStack item, final HopperBlockEntity hopper, final ServerLevel level) {
+        if (!CarpetSettings.hopperCounters) {
+            return false;
+        }
         BlockPos position = hopper.getBlockPos();
         Direction direction = level.getBlockState(position).getValue(HopperBlock.FACING);
         Block block = CraftBlock.at(level, position.relative(direction));

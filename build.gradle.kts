@@ -39,6 +39,7 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
+        mergeServiceFiles()
 
         mapOf(
             "de.bsommerfeld.jshepherd" to "jshepherd",

@@ -4,9 +4,50 @@ version: $version
 
 main: me.biquaternions.carpet.PaperCarpet
 bootstrapper: me.biquaternions.carpet.PaperCarpetBootstrap
-api-version: '26.2'
+api-version: '26.3'
 load: STARTUP
 
 authors:
   - gnembon
   - Biquaternions
+
+# Every command is also controlled by its command rule (see /carpet list command),
+# setting one of these permissions explicitly overrides the rule's permission level,
+# unless the rule is set to 'false'.
+permissions:
+  carpet.command:
+    description: Allows using /carpet regardless of carpetCommandPermissionLevel
+    default: false
+  carpet.counter:
+    description: Allows using /counter while hopperCounters is enabled
+    default: false
+  carpet.distance:
+    description: Allows using /distance regardless of commandDistance
+    default: false
+  carpet.draw:
+    description: Allows using /draw regardless of commandDraw
+    default: false
+  carpet.info:
+    description: Allows using /info regardless of commandInfo
+    default: false
+  carpet.info.extra:
+    description: Allows using /info on unloaded chunks or outside the world border
+    default: op
+  carpet.log:
+    description: Allows using /log regardless of commandLog
+    default: false
+  carpet.perimeterinfo:
+    description: Allows using /perimeterinfo regardless of commandPerimeterInfo
+    default: false
+  carpet.profile:
+    description: Allows using /profile regardless of commandProfile
+    default: false
+  carpet.spawn:
+    description: Allows using /spawn regardless of commandSpawn
+    default: false
+  carpet.track:
+    description: Allows using /track regardless of commandTrackAI
+    default: false
+  carpet.test:
+    description: Allows using /testcarpet
+    default: false

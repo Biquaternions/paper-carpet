@@ -1,5 +1,7 @@
 package me.biquaternions.carpet.commands;
 
+import me.biquaternions.carpet.CarpetSettings;
+import me.biquaternions.carpet.utils.CommandHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -21,7 +23,7 @@ public class CounterCommand {
 
     public LiteralCommandNode<CommandSourceStack> build() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("counter")
-                .requires(s -> s.getSender().hasPermission("carpet.counter"))
+                .requires(CommandHelper.commandPermission(() -> CarpetSettings.hopperCounters, "carpet.counter"))
                 .executes(c -> CounterCommand.listAllCounters(c.getSource(), false))
                 .then(Commands.literal("reset")
                         .executes(c -> CounterCommand.resetCounters(c.getSource()))

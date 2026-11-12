@@ -1,5 +1,7 @@
 package me.biquaternions.carpet.commands;
 
+import me.biquaternions.carpet.CarpetSettings;
+import me.biquaternions.carpet.utils.CommandHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -20,7 +22,7 @@ public class DistanceCommand {
 
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("distance")
-                .requires(s -> s.getSender() instanceof Player player && player.hasPermission("carpet.distance"))
+                .requires(s -> s.getSender() instanceof Player && CommandHelper.canUseCommand(s, CarpetSettings.commandDistance, "carpet.distance"))
                 .then(Commands.literal("from")
                         .executes(c -> {
                             Player player = (Player) c.getSource().getSender();

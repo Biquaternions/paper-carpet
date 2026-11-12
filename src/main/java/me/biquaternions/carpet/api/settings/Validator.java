@@ -9,10 +9,6 @@ import org.jspecify.annotations.Nullable;
  * <p>A {@link Validator} is a class that is able to validate the values given to a {@link CarpetRule}, cancelling rule
  * modification if the value is not valid or even changing the value to a different one if needed.</p>
  *
- * <p>Validators are used in the default implementation, as the way of validating most input (other than validating
- * it can actually be introduced in the rule), but can (and may) also be used in other {@link CarpetRule} implementations, though those are not
- * required to.</p>
- *
  * @see #validate(CommandSourceStack, CarpetRule, Object, String)
  *
  * @param <T> The type of the rule's value
@@ -28,12 +24,11 @@ public abstract class Validator<T> {
      * <p>This method must not throw any exceptions.</p>
      *
      * @param source The {@link CommandSourceStack} that originated this change, and should be further notified
-     *        about it. May be {@code null} during rule synchronization.
+     *        about it. May be {@code null} when loading or resetting rules.
      * @param changingRule The {@link CarpetRule} that is being changed
      * @param newValue The new value that is being set to the rule
      * @param userInput The value that is being given to this rule by the user as a {@link String}, or a best-effort representation
-     *                  of the value as a {@link String}. This value may not correspond to the result of {@link RuleHelper#toRuleString(Object)}
-     *                  if other validators have modified the value, it's just a representation of the user's input.
+     *                  of the value as a {@link String}.
      * @return The new value to set the rule to instead, can return the {@code newValue} if the given value is correct.
      *         Returns {@code null} if the given value is not correct.
      */
@@ -41,9 +36,9 @@ public abstract class Validator<T> {
 
     /**
      * @return A description of this {@link Validator}. It is used in the default {@link #notifyFailure(CommandSourceStack, CarpetRule, String)}
-     *         implementation and to add extra information in {@link SettingsManager#printAllRulesToLog(String)}
+     *         implementation and to add extra information when dumping rules.
      */
-    public String description() {
+    public @Nullable String description() {
         return null;
     }
 
@@ -56,9 +51,9 @@ public abstract class Validator<T> {
      * @param providedValue The {@link String} that was provided to the changing rule
      */
     public void notifyFailure(CommandSourceStack source, CarpetRule<T> currentRule, String providedValue) {
-        source.getSender().sendMessage(Component.text("Wrong value for " + currentRule.name() + ": " + providedValue, NamedTextColor.WHITE));
+        source.getSender().sendMessage(Component.text("Wrong value for " + currentRule.name() + ": " + providedValue, NamedTextColor.RED));
         if (this.description() != null) {
-            source.getSender().sendMessage(Component.text(this.description(), NamedTextColor.WHITE));
+            source.getSender().sendMessage(Component.text(this.description(), NamedTextColor.RED));
         }
     }
 

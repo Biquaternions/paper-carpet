@@ -17,6 +17,9 @@ import java.lang.annotation.Target;
  * - float
  * - a subclass of Enum
  * The default value of the rule will be the initial value of the field.
+ *
+ * <p>Unlike fabric-carpet, there is no translation system, so the description and extra info
+ * are part of the annotation itself.</p>
  */
 @Documented
 @Target(ElementType.FIELD)
@@ -24,10 +27,19 @@ import java.lang.annotation.Target;
 public @interface Rule {
 
     /**
+     * The description of the rule, shown in the rule menu and when browsing rules.
+     */
+    String desc();
+
+    /**
+     * Extra lines of information shown below the description in the rule menu.
+     */
+    String[] extra() default {};
+
+    /**
      * <p>An array of categories the rule is in, as {@link String strings}.</p>
      *
-     * <p>Those must have a corresponding translation key. Categories provided in Carpet's {@link RuleCategory} already
-     * have translation key.</p>
+     * @see RuleCategory
      */
     String[] categories();
 
@@ -45,14 +57,9 @@ public @interface Rule {
     boolean strict() default true;
 
     /**
-     * If specified, the rule will automatically enable or disable
-     * a builtin Scarpet Rule App with this name.
-     */
-    String appSource() default "";
-
-    /**
      * The class of the validator checked right before the rule is changed, using the returned value as the new value to set, or cancel the change if null is returned.
      */
+    @SuppressWarnings("rawtypes")
     Class<? extends Validator>[] validators() default {};
 
     /**

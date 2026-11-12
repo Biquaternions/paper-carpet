@@ -1,5 +1,7 @@
 package me.biquaternions.carpet.commands;
 
+import me.biquaternions.carpet.CarpetSettings;
+import me.biquaternions.carpet.utils.CommandHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -31,7 +33,7 @@ public class InfoCommand {
 
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("info")
-                .requires(s -> s.getSender() instanceof Player player && player.hasPermission("carpet.info"))
+                .requires(s -> s.getSender() instanceof Player && CommandHelper.canUseCommand(s, CarpetSettings.commandInfo, "carpet.info"))
                 .then(Commands.literal("block")
                         .then(Commands.argument("position", ArgumentTypes.blockPosition())
                                 .executes(c -> {

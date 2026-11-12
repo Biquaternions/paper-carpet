@@ -1,5 +1,7 @@
 package me.biquaternions.carpet.commands;
 
+import me.biquaternions.carpet.CarpetSettings;
+import me.biquaternions.carpet.utils.CommandHelper;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -21,7 +23,9 @@ import me.biquaternions.carpet.configurations.MessageConfiguration;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -36,7 +40,7 @@ public class DrawCommand {
 
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("draw")
-                .requires(s -> s.getSender() instanceof Player && s.getSender().hasPermission("carpet.draw"))
+                .requires(s -> s.getSender() instanceof Player && CommandHelper.canUseCommand(s, CarpetSettings.commandDraw, "carpet.draw"))
                 .then(Commands.literal("sphere")
                         .then(Commands.argument("center", ArgumentTypes.blockPosition())
                                 .then(Commands.argument("radius", IntegerArgumentType.integer())
@@ -131,6 +135,14 @@ public class DrawCommand {
                 );
     }
 
+    private @Nullable BlockInWorldPredicate filter(CommandContext<CommandSourceStack> ctx) {
+        try {
+            return ctx.getArgument("filter", BlockInWorldPredicate.class);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     private double lengthSq(double x, double y, double z) {
         return (x * x) + (y * y) + (z * z);
     }
@@ -143,13 +155,13 @@ public class DrawCommand {
     {
         mbpos.set(x, y, z);
         int success=0;
-        if (replacement == null || replacement.testBlock(world.getBlockAt(mbpos), true) == BlockInWorldPredicate.Result.TRUE) {
-//            BlockEntity tileentity = world.getBlockEntity(mbpos);
-//            if (tileentity instanceof Container) {
-//                ((Container) tileentity).clearContent();
-//            }
-            world.getBlockAt(mbpos).setType(block.getType());
-            list.add(block.getLocation());
+        Block target = world.getBlockAt(mbpos);
+        if (replacement == null || replacement.testBlock(target, true) == BlockInWorldPredicate.Result.TRUE) {
+            if (target.getState() instanceof Container container) {
+                container.getInventory().clear();
+            }
+            target.setBlockData(block.getBlockData(), CarpetSettings.fillUpdates);
+            list.add(target.getLocation());
             ++success;
         }
 
@@ -164,7 +176,7 @@ public class DrawCommand {
         BlockPosition pos = positionResolver.resolve(ctx.getSource());
         int radius = ctx.getArgument("radius", int.class);
         BlockState block = ctx.getArgument("block", BlockState.class);
-        BlockInWorldPredicate replacement = ctx.getArgument("filter", BlockInWorldPredicate.class);
+        BlockInWorldPredicate replacement = DrawCommand.filter(ctx);
 
         int affected = 0;
         World world = player.getWorld();
@@ -240,7 +252,7 @@ public class DrawCommand {
 //        if (CarpetSettings.fillUpdates) {
 //            list.forEach(blockpos1 -> world.updateNeighborsAt(blockpos1, world.getBlockState(blockpos1).getBlock()));
 //        }
-        player.sendMessage(MessageConfiguration.CMD_DRAW_BLOCKS_FILLED.resolveComponent(Placeholder.parsed("blocks", String.valueOf(affected))));
+        player.sendMessage(MessageConfiguration.format(MessageConfiguration.INSTANCE.cmdDrawBlocksFilled, Placeholder.parsed("blocks", String.valueOf(affected))));
         return affected;
     }
 
@@ -251,7 +263,7 @@ public class DrawCommand {
         BlockPosition pos = positionResolver.resolve(ctx.getSource());
         int radius = ctx.getArgument("radius", int.class);
         BlockState block = ctx.getArgument("block", BlockState.class);
-        BlockInWorldPredicate replacement = ctx.getArgument("filter", BlockInWorldPredicate.class);
+        BlockInWorldPredicate replacement = DrawCommand.filter(ctx);
 
         int affected=0;
 
@@ -283,7 +295,7 @@ public class DrawCommand {
 //            list.forEach(p -> world.updateNeighborsAt(p, world.getBlockState(p).getBlock()));
 //        }
 
-        player.sendMessage(MessageConfiguration.CMD_DRAW_BLOCKS_FILLED.resolveComponent(Placeholder.parsed("blocks", String.valueOf(affected))));
+        player.sendMessage(MessageConfiguration.format(MessageConfiguration.INSTANCE.cmdDrawBlocksFilled, Placeholder.parsed("blocks", String.valueOf(affected))));
         return affected;
     }
 
@@ -341,7 +353,7 @@ public class DrawCommand {
         boolean pointup = ctx.getArgument("pointing", String.class).equalsIgnoreCase("up");
         String orientation = ctx.getArgument("orientation", String.class);
         BlockState block = ctx.getArgument("block", BlockState.class);
-        BlockInWorldPredicate replacement = ctx.getArgument("filter", BlockInWorldPredicate.class);
+        BlockInWorldPredicate replacement = DrawCommand.filter(ctx);
 
         CommandSourceStack source = ctx.getSource();
 
@@ -370,7 +382,7 @@ public class DrawCommand {
 //            }
 //        }
 
-        player.sendMessage(MessageConfiguration.CMD_DRAW_BLOCKS_FILLED.resolveComponent(Placeholder.parsed("blocks", String.valueOf(affected))));
+        player.sendMessage(MessageConfiguration.format(MessageConfiguration.INSTANCE.cmdDrawBlocksFilled, Placeholder.parsed("blocks", String.valueOf(affected))));
 
         return affected;
     }
@@ -384,7 +396,7 @@ public class DrawCommand {
         int height = ctx.getArgument("height", int.class);
         String orientation = ctx.getArgument("orientation", String.class);
         BlockState block = ctx.getArgument("block", BlockState.class);
-        BlockInWorldPredicate replacement = ctx.getArgument("filter", BlockInWorldPredicate.class);
+        BlockInWorldPredicate replacement = DrawCommand.filter(ctx);
 
 
         int affected = 0;
@@ -411,7 +423,7 @@ public class DrawCommand {
 //            }
 //        }
 
-        player.sendMessage(MessageConfiguration.CMD_DRAW_BLOCKS_FILLED.resolveComponent(Placeholder.parsed("blocks", String.valueOf(affected))));
+        player.sendMessage(MessageConfiguration.format(MessageConfiguration.INSTANCE.cmdDrawBlocksFilled, Placeholder.parsed("blocks", String.valueOf(affected))));
 
         return affected;
     }
