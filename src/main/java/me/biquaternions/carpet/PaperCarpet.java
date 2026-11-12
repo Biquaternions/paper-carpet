@@ -7,6 +7,15 @@ import me.biquaternions.carpet.fakes.ActionPacks;
 import me.biquaternions.carpet.fakes.FakePlayer;
 import me.biquaternions.carpet.helper.HopperCounter;
 import me.biquaternions.carpet.listener.FakePlayerListener;
+import me.biquaternions.carpet.listener.ScarpetListener;
+import me.biquaternions.carpet.logging.HUDController;
+import me.biquaternions.carpet.script.CarpetScriptServer;
+import me.biquaternions.carpet.script.external.Carpet;
+import me.biquaternions.carpet.script.external.Vanilla;
+import net.minecraft.server.MinecraftServer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import me.biquaternions.carpet.listener.HopperListener;
 import me.biquaternions.carpet.listener.LoggingListener;
 import me.biquaternions.carpet.listener.MobAIListener;
@@ -53,6 +62,17 @@ public final class PaperCarpet extends JavaPlugin {
         manager.registerEvents(new RulesListener(), this);
         manager.registerEvents(new MobAIListener(), this);
         manager.registerEvents(new FakePlayerListener(), this);
+        manager.registerEvents(new ScarpetListener(this), this);
+        manager.registerEvents(new Listener() {
+            @EventHandler
+            public void onResourcesReloaded(final ServerResourcesReloadedEvent event) {
+                CarpetScriptServer scriptServer = Vanilla.MinecraftServer_getScriptServer(MinecraftServer.getServer());
+                if (scriptServer != null) {
+                    scriptServer.reload(MinecraftServer.getServer());
+                }
+            }
+        }, this);
+        CarpetScriptServer.parseFunctionClasses();
         this.networkHandler = new ServerNetworkHandler(this);
         this.networkHandler.register();
 
@@ -73,6 +93,10 @@ public final class PaperCarpet extends JavaPlugin {
             CarpetServer.settingsManager.loadConfiguration();
             SpawnReporter.resetSpawnStats();
             HopperCounter.resetAll(true);
+            MinecraftServer server = MinecraftServer.getServer();
+            CarpetScriptServer scriptServer = new CarpetScriptServer(server);
+            Carpet.MinecraftServer_addScriptServer(server, scriptServer);
+            scriptServer.initializeForWorld();
         });
     }
 
@@ -85,6 +109,12 @@ public final class PaperCarpet extends JavaPlugin {
             }
         }
         ActionPacks.clear();
+        CarpetScriptServer scriptServer = Vanilla.MinecraftServer_getScriptServer(MinecraftServer.getServer());
+        if (scriptServer != null) {
+            scriptServer.onClose();
+            Vanilla.MinecraftServer_setScriptServer(null);
+        }
+        HUDController.resetScarpetHUDs();
         if (this.networkHandler != null) {
             this.networkHandler.unregister();
         }

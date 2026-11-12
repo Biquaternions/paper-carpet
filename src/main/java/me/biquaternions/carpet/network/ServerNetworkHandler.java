@@ -91,6 +91,18 @@ public class ServerNetworkHandler implements Listener, PluginMessageListener {
         return this.carpetPlayers.get(player.getUniqueId());
     }
 
+    /**
+     * Sends custom data to a player running carpet on their client, like scarpet shapes.
+     */
+    public void sendCustomCommand(Player player, String command, Tag data) {
+        if (CarpetSettings.superSecretSetting || !this.isCarpetPlayer(player)) {
+            return;
+        }
+        CompoundTag tag = new CompoundTag();
+        tag.put(command, data);
+        this.send(player, tag);
+    }
+
     // ----- Events ----- //
 
     @EventHandler(priority = EventPriority.MONITOR)

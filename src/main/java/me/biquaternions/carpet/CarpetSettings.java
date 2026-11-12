@@ -5,7 +5,10 @@ import me.biquaternions.carpet.api.settings.CarpetRule;
 import me.biquaternions.carpet.api.settings.Rule;
 import me.biquaternions.carpet.api.settings.Validator;
 import me.biquaternions.carpet.api.settings.Validators;
+import me.biquaternions.carpet.script.utils.AppStoreManager;
 import me.biquaternions.carpet.utils.CommandHelper;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.PermissionSet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -19,6 +22,7 @@ import static me.biquaternions.carpet.api.settings.RuleCategory.CREATIVE;
 import static me.biquaternions.carpet.api.settings.RuleCategory.DISPENSER;
 import static me.biquaternions.carpet.api.settings.RuleCategory.EXPERIMENTAL;
 import static me.biquaternions.carpet.api.settings.RuleCategory.FEATURE;
+import static me.biquaternions.carpet.api.settings.RuleCategory.SCARPET;
 import static me.biquaternions.carpet.api.settings.RuleCategory.SURVIVAL;
 import static me.biquaternions.carpet.api.settings.RuleCategory.TNT;
 
@@ -339,6 +343,103 @@ public class CarpetSettings {
 
     @Rule(desc = "Increases for testing purposes number of blue skulls shot by the wither", categories = CREATIVE)
     public static boolean moreBlueSkulls = false;
+
+    // ---------------------------------------------------------------------------------------------------------------
+    // Scarpet
+    // ---------------------------------------------------------------------------------------------------------------
+
+    public static final ThreadLocal<Boolean> impendingFillSkipUpdates = ThreadLocal.withInitial(() -> false);
+    public static PermissionSet runPermissionLevel = LevelBasedPermissionSet.GAMEMASTER;
+
+    @Rule(desc = "Enables /script command", extra = {"An in-game scripting API for Scarpet programming language", "Bypassed by the carpet.script permission"}, categories = {COMMAND, SCARPET})
+    public static String commandScript = "true";
+
+    private static class ModulePermissionLevel extends Validator<String> {
+        @Override
+        public String validate(@Nullable CommandSourceStack source, CarpetRule<String> currentRule, String newValue, String string) {
+            int level = switch (newValue) {
+                case "0", "false" -> 0;
+                case "1" -> 1;
+                case "2", "true", "ops" -> 2;
+                case "3" -> 3;
+                case "4" -> 4;
+                default -> throw new IllegalArgumentException(); // already checked by previous validator
+            };
+            if (source != null && !CommandHelper.hasPermissionLevel(source, level)) {
+                return null;
+            }
+            CarpetSettings.runPermissionLevel = LevelBasedPermissionSet.GAMEMASTER;
+            if (source != null) {
+                CommandHelper.notifyPlayersCommandsChanged();
+                CarpetSettings.runPermissionLevel = ((net.minecraft.commands.CommandSourceStack) source).permissions();
+            }
+            return newValue;
+        }
+
+        @Override
+        public String description() {
+            return "When changing the rule, you must at least have the permission level you are trying to give it";
+        }
+    }
+
+    @Rule(
+            desc = "Enables restrictions for arbitrary code execution with scarpet",
+            extra = {
+                    "Users that don't have this permission level",
+                    "won't be able to load apps or /script run.",
+                    "It is also the permission level apps will",
+                    "have when running commands with run()"
+            },
+            categories = SCARPET,
+            options = {"ops", "0", "1", "2", "3", "4"},
+            validators = {Validators.CommandLevel.class, ModulePermissionLevel.class}
+    )
+    public static String commandScriptACE = "ops";
+
+    @Rule(desc = "Scarpet script from world files will autoload on server/world start ", extra = "if /script is enabled", categories = SCARPET)
+    public static boolean scriptsAutoload = true;
+
+    @Rule(desc = "Enables scripts debugging messages in system log", categories = SCARPET)
+    public static boolean scriptsDebugging = false;
+
+    @Rule(desc = "Enables scripts optimization", categories = SCARPET)
+    public static boolean scriptsOptimization = true;
+
+    private static class ScarpetAppStore extends Validator<String> {
+        @Override
+        public String validate(@Nullable CommandSourceStack source, CarpetRule<String> currentRule, String newValue, String stringInput) {
+            if (newValue.equals(currentRule.value())) {
+                // Don't refresh the local repo if it's the same, helps preventing hitting rate limits from github
+                return newValue;
+            }
+            if (newValue.equals("none")) {
+                AppStoreManager.setScarpetRepoLink(null);
+            } else {
+                if (newValue.endsWith("/")) {
+                    newValue = newValue.substring(0, newValue.length() - 1);
+                }
+                AppStoreManager.setScarpetRepoLink("https://api.github.com/repos/" + newValue + "/");
+            }
+            if (source != null) {
+                CommandHelper.notifyPlayersCommandsChanged();
+            }
+            return newValue;
+        }
+
+        @Override
+        public String description() {
+            return "Appstore link should point to a valid github repository";
+        }
+    }
+
+    @Rule(
+            desc = "Location of the online repository of scarpet apps",
+            extra = {"set to 'none' to disable.", "Point to any github repo with scarpet apps", "using <user>/<repo>/contents/<path...>"},
+            categories = SCARPET,
+            strict = false,
+            validators = ScarpetAppStore.class
+    )
+    public static String scriptsAppStore = "gnembon/scarpet/contents/programs";
 
     // ---------------------------------------------------------------------------------------------------------------
     // Client side rules, only effective for players with fabric-carpet installed on their client

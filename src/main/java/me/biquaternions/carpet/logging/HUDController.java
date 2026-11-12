@@ -1,5 +1,6 @@
 package me.biquaternions.carpet.logging;
 
+import io.papermc.paper.adventure.PaperAdventure;
 import me.biquaternions.carpet.helper.HopperCounter;
 import me.biquaternions.carpet.logging.helpers.PacketCounter;
 import me.biquaternions.carpet.utils.ComponentTool;
@@ -35,6 +36,17 @@ public class HUDController {
     private static final Map<UUID, List<Component>> PLAYER_HUDS = new HashMap<>();
 
     /**
+     * Headers and footers set by scarpet apps, keyed by player name.
+     */
+    public static final Map<String, net.minecraft.network.chat.Component> SCARPET_HEADERS = new HashMap<>();
+    public static final Map<String, net.minecraft.network.chat.Component> SCARPET_FOOTERS = new HashMap<>();
+
+    public static void resetScarpetHUDs() {
+        SCARPET_HEADERS.clear();
+        SCARPET_FOOTERS.clear();
+    }
+
+    /**
      * Adds listener to be called when HUD is updated for logging information
      *
      * @param listener - a method to be called when new HUD information are collected
@@ -60,6 +72,13 @@ public class HUDController {
         }
 
         PLAYER_HUDS.clear();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            net.minecraft.network.chat.Component footer = SCARPET_FOOTERS.get(player.getName());
+            if (footer != null) {
+                addMessage(player, PaperAdventure.asAdventure(footer));
+            }
+        }
 
         if (LoggerRegistry.__tps) {
             LoggerRegistry.getLogger("tps").log(() -> sendTpsDisplay(server));
@@ -103,7 +122,8 @@ public class HUDController {
             }
             List<Component> lines = PLAYER_HUDS.getOrDefault(uuid, List.of());
             Component footer = Component.join(net.kyori.adventure.text.JoinConfiguration.newlines(), lines);
-            player.sendPlayerListHeaderAndFooter(Component.empty(), footer);
+            net.minecraft.network.chat.Component header = SCARPET_HEADERS.get(player.getName());
+            player.sendPlayerListHeaderAndFooter(header == null ? Component.empty() : PaperAdventure.asAdventure(header), footer);
         }
     }
 

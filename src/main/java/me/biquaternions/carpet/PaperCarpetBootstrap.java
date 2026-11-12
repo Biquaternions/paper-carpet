@@ -3,6 +3,7 @@ package me.biquaternions.carpet;
 import de.bsommerfeld.jshepherd.core.PersistenceDelegateFactoryRegistry;
 import de.bsommerfeld.jshepherd.yaml.YamlPersistenceDelegateFactory;
 import io.papermc.paper.command.brigadier.Commands;
+import me.biquaternions.carpet.script.ScriptCommand;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
@@ -39,6 +40,7 @@ class PaperCarpetBootstrap implements PluginBootstrap {
             registrar.register(SpawnCommand.build(), "Track mob spawning");
             registrar.register(TrackCommand.build(), "Track mobs AI");
             registrar.register(PlayerCommand.build(), "Spawn and control players");
+            registrar.register(ScriptCommand.build(), "Run and manage scarpet apps");
             if (TestCommand.shouldRegister()) {
                 registrar.register(TestCommand.build(), "Carpet development command");
             }

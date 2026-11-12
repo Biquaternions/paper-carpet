@@ -5,6 +5,9 @@ import io.papermc.paper.util.KeepAlive;
 import lombok.Getter;
 import me.biquaternions.carpet.CarpetServer;
 import me.biquaternions.carpet.CarpetSettings;
+import me.biquaternions.carpet.script.CarpetEventServer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.chat.Component;
@@ -206,6 +209,29 @@ public class FakePlayer extends ServerPlayer {
             MinecraftServer server = this.level().getServer();
             server.schedule(new TickTask(server.getTickCount(), () -> this.connection.onDisconnect(details)));
         }
+    }
+
+    /**
+     * Paper fires {@code PlayerJumpEvent} from the movement packets, which fake players don't send.
+     */
+    @Override
+    public void jumpFromGround() {
+        super.jumpFromGround();
+        if (CarpetEventServer.Event.PLAYER_JUMPS.isNeeded()) {
+            CarpetEventServer.Event.PLAYER_JUMPS.onPlayerEvent(this);
+        }
+    }
+
+    /**
+     * Paper fires {@code PlayerArmSwingEvent} from the swing packet, which fake players don't send.
+     */
+    @Override
+    public boolean swing(InteractionHand hand, SwingAnimation animation, boolean updateSelf) {
+        boolean result = super.swing(hand, animation, updateSelf);
+        if (CarpetEventServer.Event.PLAYER_SWINGS_HAND.isNeeded()) {
+            CarpetEventServer.Event.PLAYER_SWINGS_HAND.onHandAction(this, hand);
+        }
+        return result;
     }
 
     @Override
