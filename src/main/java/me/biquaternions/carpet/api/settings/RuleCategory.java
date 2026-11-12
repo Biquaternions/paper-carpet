@@ -19,4 +19,8 @@ public class RuleCategory {
     public static final String TNT = "tnt";
     public static final String DISPENSER = "dispenser";
     public static final String SCARPET = "scarpet";
+    /**
+     * Rules that only have effect on clients running fabric-carpet, their value is synchronized through the carpet protocol.
+     */
+    public static final String CLIENT = "client";
 }

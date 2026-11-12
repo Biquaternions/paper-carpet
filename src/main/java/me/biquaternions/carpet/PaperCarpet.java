@@ -3,7 +3,10 @@ package me.biquaternions.carpet;
 import lombok.Getter;
 import me.biquaternions.carpet.configurations.CarpetConfiguration;
 import me.biquaternions.carpet.configurations.MessageConfiguration;
+import me.biquaternions.carpet.fakes.ActionPacks;
+import me.biquaternions.carpet.fakes.FakePlayer;
 import me.biquaternions.carpet.helper.HopperCounter;
+import me.biquaternions.carpet.listener.FakePlayerListener;
 import me.biquaternions.carpet.listener.HopperListener;
 import me.biquaternions.carpet.listener.LoggingListener;
 import me.biquaternions.carpet.listener.MobAIListener;
@@ -12,18 +15,26 @@ import me.biquaternions.carpet.listener.ServerListener;
 import me.biquaternions.carpet.listener.WorldListener;
 import me.biquaternions.carpet.logging.LoggerRegistry;
 import me.biquaternions.carpet.logging.helpers.PacketCounter;
+import me.biquaternions.carpet.network.ServerNetworkHandler;
 import me.biquaternions.carpet.utils.MobAI;
 import me.biquaternions.carpet.utils.SpawnReporter;
+import net.minecraft.network.DisconnectionDetails;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+
 public final class PaperCarpet extends JavaPlugin {
 
     @Getter
     private static @Nullable PaperCarpet instance;
+
+    @Getter
+    private @Nullable ServerNetworkHandler networkHandler;
 
     @Override
     public void onLoad() {
@@ -41,6 +52,9 @@ public final class PaperCarpet extends JavaPlugin {
         manager.registerEvents(new LoggingListener(), this);
         manager.registerEvents(new RulesListener(), this);
         manager.registerEvents(new MobAIListener(), this);
+        manager.registerEvents(new FakePlayerListener(), this);
+        this.networkHandler = new ServerNetworkHandler(this);
+        this.networkHandler.register();
 
         // Worlds loaded before the plugin was enabled (e.g. after a reload)
         for (World world : this.getServer().getWorlds()) {
@@ -64,6 +78,16 @@ public final class PaperCarpet extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Fake players are instances of this plugin's classes, they must not outlive it
+        for (Player player : List.copyOf(this.getServer().getOnlinePlayers())) {
+            if (((CraftPlayer) player).getHandle() instanceof FakePlayer fake) {
+                fake.connection.onDisconnect(new DisconnectionDetails(net.minecraft.network.chat.Component.literal("Carpet disabled")));
+            }
+        }
+        ActionPacks.clear();
+        if (this.networkHandler != null) {
+            this.networkHandler.unregister();
+        }
         for (Player player : this.getServer().getOnlinePlayers()) {
             PacketCounter.uninject(player);
         }

@@ -13,6 +13,7 @@ import org.bukkit.World;
 import org.jspecify.annotations.Nullable;
 
 import static me.biquaternions.carpet.api.settings.RuleCategory.BUGFIX;
+import static me.biquaternions.carpet.api.settings.RuleCategory.CLIENT;
 import static me.biquaternions.carpet.api.settings.RuleCategory.COMMAND;
 import static me.biquaternions.carpet.api.settings.RuleCategory.CREATIVE;
 import static me.biquaternions.carpet.api.settings.RuleCategory.DISPENSER;
@@ -120,6 +121,15 @@ public class CarpetSettings {
 
     @Rule(desc = "Allows to track mobs AI via /track command", extra = "Bypassed by the carpet.track permission", categories = COMMAND)
     public static String commandTrackAI = "ops";
+
+    @Rule(desc = "Enables /player command to control/spawn players", extra = "Bypassed by the carpet.player permission", categories = COMMAND)
+    public static String commandPlayer = "ops";
+
+    @Rule(desc = "Spawn offline players in online mode if online-mode player with specified name does not exist", categories = COMMAND)
+    public static boolean allowSpawningOfflinePlayers = true;
+
+    @Rule(desc = "Allows listing fake players on the multiplayer screen", categories = COMMAND)
+    public static boolean allowListingFakePlayers = false;
 
     @Rule(desc = "Placing carpets may issue carpet commands for non-op players", categories = SURVIVAL)
     public static boolean carpets = false;
@@ -329,6 +339,59 @@ public class CarpetSettings {
 
     @Rule(desc = "Increases for testing purposes number of blue skulls shot by the wither", categories = CREATIVE)
     public static boolean moreBlueSkulls = false;
+
+    // ---------------------------------------------------------------------------------------------------------------
+    // Client side rules, only effective for players with fabric-carpet installed on their client
+    // ---------------------------------------------------------------------------------------------------------------
+
+    @Rule(
+            desc = "smooth client animations with low tps settings",
+            extra = {"works only in SP, and will slow down players", "Requires fabric-carpet on the client"},
+            categories = {CREATIVE, SURVIVAL, CLIENT}
+    )
+    public static boolean smoothClientAnimations = true;
+
+    @Rule(
+            desc = "Removes fog from client in the nether and the end",
+            extra = {"Improves visibility, but looks weird", "Requires fabric-carpet on the client"},
+            categories = CLIENT
+    )
+    public static boolean fogOff = false;
+
+    @Rule(
+            desc = "Creative flying speed multiplier",
+            extra = {"Purely client side setting, sent to clients with fabric-carpet installed"},
+            categories = {CREATIVE, CLIENT},
+            options = {"1.0"},
+            strict = false,
+            validators = Validators.NonNegativeNumber.class
+    )
+    public static double creativeFlySpeed = 1.0;
+
+    @Rule(
+            desc = "Creative air drag",
+            extra = {
+                    "Increased drag will slow down your flight",
+                    "So need to adjust speed accordingly",
+                    "With 1.0 drag, using speed of 11 seems to matching vanilla speeds.",
+                    "Purely client side setting, sent to clients with fabric-carpet installed"
+            },
+            categories = {CREATIVE, CLIENT},
+            options = {"0.09"},
+            strict = false,
+            validators = Validators.Probability.class
+    )
+    public static double creativeFlyDrag = 0.09;
+
+    @Rule(
+            desc = "Customizable Structure Block outline render distance",
+            extra = "Requires fabric-carpet on the client",
+            options = {"96", "192", "2048"},
+            categories = {CREATIVE, CLIENT},
+            strict = false,
+            validators = Validators.NonNegativeNumber.class
+    )
+    public static int structureBlockOutlineDistance = 96;
 
     @Rule(
             desc = "Lightning kills the items that drop when lightning kills an entity",

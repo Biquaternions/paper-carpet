@@ -39,6 +39,12 @@ permissions:
   carpet.perimeterinfo:
     description: Allows using /perimeterinfo regardless of commandPerimeterInfo
     default: false
+  carpet.player:
+    description: Allows using /player regardless of commandPlayer
+    default: false
+  carpet.player.others:
+    description: Allows controlling other real players with /player without being an operator
+    default: false
   carpet.profile:
     description: Allows using /profile regardless of commandProfile
     default: false

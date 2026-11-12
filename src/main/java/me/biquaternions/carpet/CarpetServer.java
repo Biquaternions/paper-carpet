@@ -16,6 +16,7 @@ public class CarpetServer {
 
     public final String VERSION = "1.0-SNAPSHOT";
     public final Logger LOG = Logger.getLogger("Carpet");
+    public final org.slf4j.Logger SLF4J = org.slf4j.LoggerFactory.getLogger("Carpet");
 
     public final SettingsManager settingsManager = createSettingsManager();
 

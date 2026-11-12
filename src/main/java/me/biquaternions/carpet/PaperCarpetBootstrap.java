@@ -13,6 +13,7 @@ import me.biquaternions.carpet.commands.DrawCommand;
 import me.biquaternions.carpet.commands.InfoCommand;
 import me.biquaternions.carpet.commands.LogCommand;
 import me.biquaternions.carpet.commands.PerimeterInfoCommand;
+import me.biquaternions.carpet.commands.PlayerCommand;
 import me.biquaternions.carpet.commands.ProfileCommand;
 import me.biquaternions.carpet.commands.SpawnCommand;
 import me.biquaternions.carpet.commands.TestCommand;
@@ -37,6 +38,7 @@ class PaperCarpetBootstrap implements PluginBootstrap {
             registrar.register(ProfileCommand.build(), "Monitor the server performance");
             registrar.register(SpawnCommand.build(), "Track mob spawning");
             registrar.register(TrackCommand.build(), "Track mobs AI");
+            registrar.register(PlayerCommand.build(), "Spawn and control players");
             if (TestCommand.shouldRegister()) {
                 registrar.register(TestCommand.build(), "Carpet development command");
             }
